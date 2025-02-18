@@ -67,11 +67,19 @@ export interface Textbox {
   spellcheck?: B
   /** Keyboard to be shown on mobile devices. Defaults to 'text'. */
   type?: 'text' | 'number' | 'tel'
+
+  onEnter?: boolean
 }
 
 const DEBOUNCE_TIMEOUT = 500
 export const
   XTextbox = ({ model: m }: { model: Textbox }) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && m.onEnter) {
+          wave.args[m.name] = value
+          wave.push()
+        }
+      }
     const
       [value, setValue] = React.useState(m.value ?? ''),
       debounceRef = React.useRef(debounce(DEBOUNCE_TIMEOUT, wave.push)),
@@ -111,6 +119,7 @@ export const
       ? <Fluent.MaskedTextField mask={m.mask} {...textFieldProps} />
       : (
         <Fluent.TextField
+            onKeyDown={handleKeyDown}
           styles={
             m.multiline && m.height && !m.height.endsWith('%')
               ? { field: { height: m.height }, fieldGroup: { minHeight: m.height } }

@@ -168,4 +168,22 @@ describe('Textbox.tsx', () => {
     fireEvent.click(revealButton!)
     expect(getByTestId(name)).toHaveAttribute('type', 'text')
   })
+
+  it('Calls wave.push when pressing Enter if submit_on_enter is true', () => {
+    const model: Textbox = { ...textboxProps, onEnter: true }
+    const { getByTestId } = render(<XTextbox model={model} />)
+
+    userEvent.type(getByTestId(name), 'hello{enter}')
+
+    expect(pushMock).toHaveBeenCalledTimes(1)
+
+    expect(wave.args[name]).toBe('hello')
+    /**
+     * Test case made for Open-Source-Contribution: Calls wave.push when pressing Enter if onEnter is true.
+     *
+     * test verifies that upon when the textbox is created, onEnter is set to `true`, typing some text
+     * followed by the Enter key sends `wave.push()` right after without debounce, `wave.args` value
+     * is updated to text.
+     */
+  })
 })
